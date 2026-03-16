@@ -217,10 +217,10 @@ nav.scrolled {
 .hero-overlay {
   position:absolute; inset:0; z-index:1;
   background:
-    linear-gradient(180deg, 
-      rgba(20,5,40,.3) 0%, 
-      rgba(60,20,100,.15) 40%,
-      rgba(20,5,40,.55) 100%);
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(109,40,217,.45) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 20% 70%, rgba(139,92,246,.25) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 80%, rgba(76,29,149,.3) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(20,5,40,.6) 0%, rgba(26,10,46,1) 100%);
   pointer-events:none;
 }
 .hero-grid { display:none; }
@@ -698,9 +698,6 @@ footer strong {
 <!-- ══════════════ HOME ══════════════ -->
 <div id="page-home" class="page active">
   <section class="hero">
-    <video class="hero-video" id="bg-video" autoplay muted loop playsinline>
-      <source src="trailer.mp4" type="video/mp4">
-    </video>
     <div class="hero-overlay"></div>
     <canvas id="particles-canvas"></canvas>
     <div class="hero-inner">
@@ -1311,11 +1308,34 @@ window.submitForm = async function() {
   btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> جاري الإرسال...';
   msg.style.display = 'none';
 
+  // ── ضع رابط الـ Webhook هنا ──
+  var WEBHOOK_URL = 'https://discord.com/api/webhooks/1483173447558369501/IWdR2NFNYM_NxGjV-7llH6IP_bDB2dbrarQEJ0G7QlDjmMGDH1FReLJLgY2577RJo08G';
+
+  var fields = [
+    { name: '👤 الاسم الحقيقي',  value: name,   inline: true },
+    { name: '🎮 يوزر روبلوكس',   value: roblox, inline: true },
+    { name: '🎂 العمر',           value: age,    inline: true },
+    { name: '🆔 Discord ID',      value: '<@' + discord + '> — `' + discord + '`', inline: false },
+  ];
+  for (var qi = 1; qi <= 10; qi++) {
+    if (answers['q'+qi]) fields.push({ name: 'س' + qi, value: answers['q'+qi], inline: false });
+  }
+
   try {
-    var res = await fetch('https://novacity-bot.up.railway.app/apply', {
+    var res = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({roblox:roblox, name:name, age:age, discord_id:discord, answers:answers})
+      body: JSON.stringify({
+        username: 'NovaCity | نظام التفعيل',
+        avatar_url: 'https://nova-city.vercel.app/thumb.jpg',
+        embeds: [{
+          title: '📋 طلب تفعيل جديد',
+          color: 0x7c3aed,
+          fields: fields,
+          footer: { text: 'NovaCity Activation System • ' + new Date().toLocaleString('ar-SA') },
+          thumbnail: { url: 'https://nova-city.vercel.app/thumb.jpg' }
+        }]
+      })
     });
     if (res.ok) {
       document.getElementById('act-step2').style.display = 'none';
